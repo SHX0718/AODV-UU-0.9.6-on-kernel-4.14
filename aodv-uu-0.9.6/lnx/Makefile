@@ -8,25 +8,26 @@ obj-m += kaodv.o
 kaodv-objs := kaodv-mod.o kaodv-debug.o kaodv-netlink.o kaodv-queue.o kaodv-ipenc.o kaodv-expl.o
 else
 
-#you can change cross_conpile for you system.
-ARCH=arm
-CROSS_COMPILE=arm-linux-gnueabihf-
+# you can change cross_compile for your system.
+ARCH?=$(shell uname -m)
+CROSS_COMPILE?=
 
 KOBJS := kaodv-mod.o kaodv-debug.o kaodv-netlink.o kaodv-queue.o kaodv-ipenc.o kaodv-expl.o
 KOBJS_ARM := $(KOBJS:%.o=%-arm.o)
 KOBJS_MIPS := $(KOBJS:%.o=%-mips.o)
 
-KERNEL=4.14.93-v7+
-KERNEL_DIR=/home/asd/rpi/linux
+# Default to the running kernel headers (Ubuntu 16.04 uses 4.4.x).
+KERNEL:=$(shell uname -r)
+KERNEL_DIR=/lib/modules/$(KERNEL)/build
 KERNEL_INC=$(KERNEL_DIR)/include
-KERNEL_ARM_DIR=/home/asd/rpi/linux
+KERNEL_ARM_DIR=/lib/modules/$(KERNEL)/build
 KERNEL_ARM_INC=$(KERNEL_ARM_DIR)/include
 
 THIS_DIR=$(shell pwd)
 
-# You might want to use gcc32 for the kernel module on Fedora core 1
-KCC=arm-linux-gnueabihf-gcc
-LD=arm-linux-gnueabihf-gcc-ld
+# Use host toolchain by default unless cross-compiling explicitly.
+KCC=$(CROSS_COMPILE)gcc
+LD=$(CROSS_COMPILE)ld
 XDEFS=
 
 # Some shell scripting to find out Linux kernel version

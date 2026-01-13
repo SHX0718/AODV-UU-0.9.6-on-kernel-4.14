@@ -255,13 +255,8 @@ int kaodv_queue_set_verdict(int verdict, __u32 daddr)
 				if (!entry->skb)
 					goto next;
 			}
-//#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18))
-	//		ip_route_me_harder(&entry->skb);
-//#elif (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-//			ip_route_me_harder(&entry->skb, RTN_LOCAL);
-//#else
-			ip_route_me_harder(&init_net,entry->skb, RTN_LOCAL);
-//#endif
+			/* 4.14: ip_route_me_harder(&init_net, entry->skb, RTN_LOCAL); */
+			ip_route_me_harder(entry->skb, RTN_LOCAL);
 			pkts++;
 
 			/* Inject packet */

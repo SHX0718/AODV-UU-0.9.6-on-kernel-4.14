@@ -283,7 +283,8 @@ static struct notifier_block kaodv_nl_notifier = {
     .notifier_call = kaodv_netlink_rcv_nl_event,
 };
 
-#define RCV_SKB_FAIL(err) do { netlink_ack(skb, nlh, (err),NULL);printk(KERN_ALERT "err ack for the request!!!"); return; } while (0)
+/* 4.14: netlink_ack(skb, nlh, (err), NULL) */
+#define RCV_SKB_FAIL(err) do { netlink_ack(skb, nlh, (err));printk(KERN_ALERT "err ack for the request!!!"); return; } while (0)
 
 static inline void kaodv_netlink_rcv_skb(struct sk_buff *skb)
 {
@@ -367,7 +368,8 @@ static inline void kaodv_netlink_rcv_skb(struct sk_buff *skb)
     if (flags & NLM_F_ACK)
     {
         printk(KERN_ALERT"kernel send the msg!!!!!!\n");
-        netlink_ack(skb, nlh, 0,NULL);
+        /* 4.14: netlink_ack(skb, nlh, 0, NULL); */
+        netlink_ack(skb, nlh, 0);
     }
     else
     {

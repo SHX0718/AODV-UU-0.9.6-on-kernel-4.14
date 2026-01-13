@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Erik Nordström, <erik.nordstrom@it.uu.se>
+ * Author: Erik Nordstrï¿½m, <erik.nordstrom@it.uu.se>
  *
  *****************************************************************************/
 #include <linux/version.h>
@@ -71,8 +71,8 @@ int active_route_timeout = 3000;
 //static unsigned int loindex = 0;
 
 MODULE_DESCRIPTION
-    ("AODV-UU kernel support. © Uppsala University & Ericsson AB");
-MODULE_AUTHOR("Erik Nordström");
+    ("AODV-UU kernel support. ï¿½ Uppsala University & Ericsson AB");
+MODULE_AUTHOR("Erik Nordstrï¿½m");
 #ifdef MODULE_LICENSE
 MODULE_LICENSE("GPL");
 #endif
@@ -298,9 +298,8 @@ static unsigned int kaodv_hook(void *priv,
 			if (!skb)
 				return NF_STOLEN;
 
-			//ip_route_me_harder(skb, RTN_LOCAL);
-			//ip_route_me_harder(NULL,skb, RTN_LOCAL);
-			ip_route_me_harder(&init_net,skb, RTN_LOCAL);
+			/* 4.14: ip_route_me_harder(&init_net, skb, RTN_LOCAL); */
+			ip_route_me_harder(skb, RTN_LOCAL);
 		}
 		break;
 	case NF_INET_POST_ROUTING:
@@ -444,18 +443,18 @@ static int __init kaodv_init(void)
 	if (ret < 0)
 		goto cleanup_queue;
 
-	//ret = nf_register_hook(&kaodv_ops[0]);
-	ret=nf_register_net_hook(&init_net,&kaodv_ops[0]);
+	ret = nf_register_hook(&kaodv_ops[0]);
+	//ret=nf_register_net_hook(&init_net,&kaodv_ops[0]);
 	if (ret < 0)
 		goto cleanup_netlink;
 
-	//ret = nf_register_hook(&kaodv_ops[1]);
-ret=nf_register_net_hook(&init_net,&kaodv_ops[1]);
+	ret = nf_register_hook(&kaodv_ops[1]);
+//ret=nf_register_net_hook(&init_net,&kaodv_ops[1]);
 	if (ret < 0)
 		goto cleanup_hook0;
 
-	//ret = nf_register_hook(&kaodv_ops[2]);
-ret=nf_register_net_hook(&init_net,&kaodv_ops[2]);
+	ret = nf_register_hook(&kaodv_ops[2]);
+//ret=nf_register_net_hook(&init_net,&kaodv_ops[2]);
 	if (ret < 0)
 		goto cleanup_hook1;
 
@@ -494,11 +493,11 @@ ret=nf_register_net_hook(&init_net,&kaodv_ops[2]);
 	return ret;
 
 cleanup_hook1:
-	//nf_unregister_hook(&kaodv_ops[1]);
-	nf_unregister_net_hook(&init_net,&kaodv_ops[1]);
+	nf_unregister_hook(&kaodv_ops[1]);
+//	nf_unregister_net_hook(&init_net,&kaodv_ops[1]);
 cleanup_hook0:
-	//nf_unregister_hook(&kaodv_ops[0]);
-	nf_unregister_net_hook(&init_net,&kaodv_ops[0]);
+	nf_unregister_hook(&kaodv_ops[0]);
+//	nf_unregister_net_hook(&init_net,&kaodv_ops[0]);
 cleanup_netlink:
 	kaodv_netlink_fini();
 cleanup_queue:
@@ -517,8 +516,8 @@ static void __exit kaodv_exit(void)
 	if_info_purge();
 
 	for (i = 0; i < sizeof(kaodv_ops) / sizeof(struct nf_hook_ops); i++)
-		//nf_unregister_hook(&kaodv_ops[i]);
-		nf_unregister_net_hook(&init_net,&kaodv_ops[i]);
+		nf_unregister_hook(&kaodv_ops[i]);
+//		nf_unregister_net_hook(&init_net,&kaodv_ops[i]);
 //#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
 	//proc_net_remove("kaodv");
 //#elif (LINUX_VERSION_CODE < KERNEL_VERSION(3,12,17))
