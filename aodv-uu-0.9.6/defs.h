@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Erik Nordström, <erik.nordstrom@it.uu.se>
+ * Authors: Erik Nordstrï¿½m, <erik.nordstrom@it.uu.se>
  *
  *****************************************************************************/
 #ifndef _DEFS_H
@@ -57,7 +57,7 @@
 #define NS_CLASS
 #define NS_OUTSIDE_CLASS
 #define NS_STATIC static
-#define NS_INLINE inline
+#define NS_INLINE static inline
 #endif
 
 #define AODV_UU_VERSION "0.9"
