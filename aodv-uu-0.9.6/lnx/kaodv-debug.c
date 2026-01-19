@@ -19,8 +19,8 @@
  * Author: Erik Nordström, <erik.nordstrom@it.uu.se>
  *
  *****************************************************************************/
-#include <asm/uaccess.h>
-#include <asm/io.h>
+#include <linux/uaccess.h>
+#include <linux/io.h>
 
 #include "kaodv-debug.h"
 #include "kaodv-netlink.h"
