@@ -18,11 +18,14 @@ OBJS_MIPS = $(SRC:%.c=%-mips.o)
 OBJS_NS = $(SRC_NS:%.c=%-ns.o)
 OBJS_NS_CPP = $(SRC_NS_CPP:%.cc=%-ns.o)
 
-KERNEL=4.14.93-v7+
+# Kernel version - should match your running kernel (uname -r)
+KERNEL=$(shell uname -r)
 # Change to compile against different kernel (can be overridden):
-KERNEL_DIR=/home/asd/rpi/linux
+# For Ubuntu/Debian, use /lib/modules/$(KERNEL)/build
+KERNEL_DIR=/lib/modules/$(KERNEL)/build
 KERNEL_INC=$(KERNEL_DIR)/include
 
+# ARM cross-compile settings (not used for local x86 compile)
 KERNEL_ARM_DIR=/home/asd/rpi/linux
 KERNEL_ARM_INC=$(KERNEL_ARM_DIR)/include
 

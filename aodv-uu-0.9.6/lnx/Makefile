@@ -8,7 +8,7 @@ obj-m += kaodv.o
 kaodv-objs := kaodv-mod.o kaodv-debug.o kaodv-netlink.o kaodv-queue.o kaodv-ipenc.o kaodv-expl.o
 else
 
-#you can change cross_conpile for you system.
+# Cross-compile settings (only used for ARM builds)
 ARCH=arm
 CROSS_COMPILE=arm-linux-gnueabihf-
 
@@ -16,17 +16,21 @@ KOBJS := kaodv-mod.o kaodv-debug.o kaodv-netlink.o kaodv-queue.o kaodv-ipenc.o k
 KOBJS_ARM := $(KOBJS:%.o=%-arm.o)
 KOBJS_MIPS := $(KOBJS:%.o=%-mips.o)
 
-KERNEL=4.14.93-v7+
-KERNEL_DIR=/home/asd/rpi/linux
+# Auto-detect kernel version from running system
+KERNEL=$(shell uname -r)
+# For Ubuntu/Debian systems, kernel build dir is here:
+KERNEL_DIR=/lib/modules/$(KERNEL)/build
 KERNEL_INC=$(KERNEL_DIR)/include
+
+# ARM cross-compile directories (not used for local x86 compile)
 KERNEL_ARM_DIR=/home/asd/rpi/linux
 KERNEL_ARM_INC=$(KERNEL_ARM_DIR)/include
 
 THIS_DIR=$(shell pwd)
 
-# You might want to use gcc32 for the kernel module on Fedora core 1
-KCC=arm-linux-gnueabihf-gcc
-LD=arm-linux-gnueabihf-gcc-ld
+# Use local gcc for x86 compile (not cross-compiler)
+KCC=gcc
+LD=ld
 XDEFS=
 
 # Some shell scripting to find out Linux kernel version
