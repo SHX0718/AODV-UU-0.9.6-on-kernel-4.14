@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Erik Nordström, <erik.nordstrom@it.uu.se>
+ * Authors: Erik Nordstrï¿½m, <erik.nordstrom@it.uu.se>
  *          
  *
  *****************************************************************************/
@@ -40,7 +40,7 @@ void hello_send(void *arg);
 void hello_process(RREP * hello, int rreplen, unsigned int ifindex);
 void hello_process_non_hello(AODV_msg * aodv_msg, struct in_addr source,
 			     unsigned int ifindex);
-NS_INLINE void hello_update_timeout(rt_table_t * rt, struct timeval *now,
+void hello_update_timeout(rt_table_t * rt, struct timeval *now,
 				    long time);
 
 #ifdef NS_PORT

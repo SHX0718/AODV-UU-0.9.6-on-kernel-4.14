@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Erik Nordström, <erik.nordstrom@it.uu.se>
+ * Authors: Erik Nordstrï¿½m, <erik.nordstrom@it.uu.se>
  *          
  *
  *****************************************************************************/
@@ -290,7 +290,7 @@ void NS_CLASS hello_process(RREP * hello, int rreplen, unsigned int ifindex)
 				   message to take (due to processing) before
 				   assuming lost . */
 
-NS_INLINE void NS_CLASS hello_update_timeout(rt_table_t * rt,
+void NS_CLASS hello_update_timeout(rt_table_t * rt,
 					     struct timeval *now, long time)
 {
     timer_set_timeout(&rt->hello_timer, time + HELLO_DELAY);

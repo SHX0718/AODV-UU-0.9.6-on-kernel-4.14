@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Erik Nordström, <erik.nordstrom@it.uu.se>
+ * Authors: Erik Nordstrï¿½m, <erik.nordstrom@it.uu.se>
  *
  *****************************************************************************/
 
@@ -268,7 +268,7 @@ rt_table_t *NS_CLASS rt_table_update(rt_table_t * rt, struct in_addr next,
 	return rt;
 }
 
-NS_INLINE rt_table_t *NS_CLASS rt_table_update_timeout(rt_table_t * rt,
+rt_table_t *NS_CLASS rt_table_update_timeout(rt_table_t * rt,
 						       u_int32_t lifetime)
 {
 	struct timeval new_timeout;
