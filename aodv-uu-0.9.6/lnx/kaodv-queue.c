@@ -255,13 +255,12 @@ int kaodv_queue_set_verdict(int verdict, __u32 daddr)
 				if (!entry->skb)
 					goto next;
 			}
-//#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18))
-	//		ip_route_me_harder(&entry->skb);
-//#elif (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-//			ip_route_me_harder(&entry->skb, RTN_LOCAL);
-//#else
-			ip_route_me_harder(&init_net,entry->skb, RTN_LOCAL);
-//#endif
+			/* Linux 5.4+ added struct sock *sk parameter */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,0))
+			ip_route_me_harder(&init_net, entry->sk, entry->skb, RTN_LOCAL);
+#else
+			ip_route_me_harder(&init_net, entry->skb, RTN_LOCAL);
+#endif
 			pkts++;
 
 			/* Inject packet */
@@ -345,11 +344,17 @@ static ssize_t kaodv_queue_get_info(struct file *file, char *buffer, size_t leng
 #endif
 
 
-static const struct file_operations fops_queue={
-	.owner=THIS_MODULE,
-	.read=kaodv_queue_get_info,
-	//.read=seq_read,
+/* Linux 5.6+ uses struct proc_ops instead of file_operations for /proc */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+static const struct proc_ops fops_queue = {
+	.proc_read = kaodv_queue_get_info,
 };
+#else
+static const struct file_operations fops_queue = {
+	.owner = THIS_MODULE,
+	.read = kaodv_queue_get_info,
+};
+#endif
 static int init_or_cleanup(int init)
 {
 	int status = -ENOMEM;

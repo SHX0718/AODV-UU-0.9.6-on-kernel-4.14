@@ -55,7 +55,12 @@ static LIST_HEAD(expl_head);
 #ifdef EXPL_TIMER
 static struct timer_list expl_timer;
 
+/* Linux 4.15+ changed timer callback signature */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0))
+static void kaodv_expl_timeout(struct timer_list *t);
+#else
 static void kaodv_expl_timeout(unsigned long data);
+#endif
 
 static inline void __kaodv_expl_set_next_timeout(void)
 {
@@ -70,14 +75,23 @@ static inline void __kaodv_expl_set_next_timeout(void)
 	if (timer_pending(&expl_timer)) {
 		mod_timer(&expl_timer, ne->expires);
 	} else {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0))
+		expl_timer.expires = ne->expires;
+		add_timer(&expl_timer);
+#else
 		expl_timer.function = kaodv_expl_timeout;
 		expl_timer.expires = ne->expires;
 		expl_timer.data = 0;
 		add_timer(&expl_timer);
+#endif
 	}
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0))
+static void kaodv_expl_timeout(struct timer_list *t)
+#else
 static void kaodv_expl_timeout(unsigned long data)
+#endif
 {
 	struct list_head *pos, *tmp;
 	int time = jiffies;
@@ -259,10 +273,15 @@ int kaodv_expl_add(__u32 daddr, __u32 nhop, unsigned long time,
 		if (timer_pending(&expl_timer))
 			mod_timer(&expl_timer, e->expires);
 		else {
-			expl_timer.function = expl_timeout;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0))
+			expl_timer.expires = e->expires;
+			add_timer(&expl_timer);
+#else
+			expl_timer.function = kaodv_expl_timeout;
 			expl_timer.expires = e->expires;
 			expl_timer.data = 0;
 			add_timer(&expl_timer);
+#endif
 		}
 	}
 #endif
@@ -382,11 +401,17 @@ static ssize_t kaodv_expl_proc_info(struct file *file, char *buffer, size_t leng
 }
 #endif
 
-static const struct file_operations fops_expl={
-	.owner=THIS_MODULE,
-	.read=kaodv_expl_proc_info,	
-	//.read=seq_read,
-};											   
+/* Linux 5.6+ uses struct proc_ops instead of file_operations for /proc */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+static const struct proc_ops fops_expl = {
+	.proc_read = kaodv_expl_proc_info,
+};
+#else
+static const struct file_operations fops_expl = {
+	.owner = THIS_MODULE,
+	.read = kaodv_expl_proc_info,
+};
+#endif											   
 int kaodv_expl_update(__u32 daddr, __u32 nhop, unsigned long time,
 		      unsigned short flags, int ifindex)
 {
@@ -449,7 +474,12 @@ void kaodv_expl_init(void)
 
 	expl_len = 0;
 #ifdef EXPL_TIMER
+	/* Linux 4.15+ uses timer_setup() instead of init_timer() */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,15,0))
+	timer_setup(&expl_timer, kaodv_expl_timeout, 0);
+#else
 	init_timer(&expl_timer);
+#endif
 #endif
 }
 

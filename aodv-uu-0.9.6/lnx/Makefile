@@ -8,16 +8,19 @@ obj-m += kaodv.o
 kaodv-objs := kaodv-mod.o kaodv-debug.o kaodv-netlink.o kaodv-queue.o kaodv-ipenc.o kaodv-expl.o
 else
 
-#you can change cross_conpile for you system.
-ARCH=arm
-CROSS_COMPILE=arm-linux-gnueabihf-
+# Cross compile settings for your target system
+# For OpenWrt 22.03.4 on GL-AR300M (MIPS 24Kc, ath79/nand)
+# Default to MIPS for OpenWrt, can override with make ARCH=arm
+ARCH ?= mips
+CROSS_COMPILE ?= mips-openwrt-linux-
 
 KOBJS := kaodv-mod.o kaodv-debug.o kaodv-netlink.o kaodv-queue.o kaodv-ipenc.o kaodv-expl.o
 KOBJS_ARM := $(KOBJS:%.o=%-arm.o)
 KOBJS_MIPS := $(KOBJS:%.o=%-mips.o)
 
-KERNEL=4.14.93-v7+
-KERNEL_DIR=/home/asd/rpi/linux
+# Kernel version: OpenWrt 22.03.4 uses Linux 5.10
+KERNEL=5.10
+KERNEL_DIR ?= /path/to/openwrt/build_dir/target-mips_24kc_musl/linux-ath79_nand/linux-5.10.x
 KERNEL_INC=$(KERNEL_DIR)/include
 KERNEL_ARM_DIR=/home/asd/rpi/linux
 KERNEL_ARM_INC=$(KERNEL_ARM_DIR)/include

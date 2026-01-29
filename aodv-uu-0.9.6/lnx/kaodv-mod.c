@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Erik Nordström, <erik.nordstrom@it.uu.se>
+ * Author: Erik Nordstr?m, <erik.nordstrom@it.uu.se>
  *
  *****************************************************************************/
 #include <linux/version.h>
@@ -71,8 +71,8 @@ int active_route_timeout = 3000;
 //static unsigned int loindex = 0;
 
 MODULE_DESCRIPTION
-    ("AODV-UU kernel support. © Uppsala University & Ericsson AB");
-MODULE_AUTHOR("Erik Nordström");
+    ("AODV-UU kernel support. ? Uppsala University & Ericsson AB");
+MODULE_AUTHOR("Erik Nordstr?m");
 #ifdef MODULE_LICENSE
 MODULE_LICENSE("GPL");
 #endif
@@ -298,9 +298,12 @@ static unsigned int kaodv_hook(void *priv,
 			if (!skb)
 				return NF_STOLEN;
 
-			//ip_route_me_harder(skb, RTN_LOCAL);
-			//ip_route_me_harder(NULL,skb, RTN_LOCAL);
-			ip_route_me_harder(&init_net,skb, RTN_LOCAL);
+			/* Linux 5.4+ added struct sock *sk parameter */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,4,0))
+			ip_route_me_harder(&init_net, skb->sk, skb, RTN_LOCAL);
+#else
+			ip_route_me_harder(&init_net, skb, RTN_LOCAL);
+#endif
 		}
 		break;
 	case NF_INET_POST_ROUTING:
@@ -416,11 +419,17 @@ static ssize_t kaodv_read_proc(struct file *file, char *buffer, size_t length, l
 	
 }
 
+/* Linux 5.6+ uses struct proc_ops instead of file_operations for /proc */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0))
+static const struct proc_ops fops = {
+	.proc_read = kaodv_read_proc,
+};
+#else
 static const struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.read = kaodv_read_proc,
-	//.read=seq_read,
 };
+#endif
 
 
 static int __init kaodv_init(void)
